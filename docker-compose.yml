@@ -1,0 +1,76 @@
+version: "3.8"
+
+services:
+    loki:
+        image: grafana/loki:master
+        command: -config.file=/etc/loki/local-config.yaml
+        networks:
+            - grafana-loki
+            - promtail-loki
+
+    promtail:
+        depends_on:
+            - loki
+        image: grafana/promtail:master
+        volumes:
+            - /var/log:/var/log
+        command: -config.file=/etc/promtail/docker-config.yaml
+        networks:
+            - promtail-loki
+
+    cadvisor:
+        image: google/cadvisor:v0.33.0
+        volumes:
+            - /:/rootfs:ro
+            - /var/run:/var/run:ro
+            - /sys:/sys:ro
+            - /var/lib/docker/:/var/lib/docker:ro
+            - /dev/disk/:/dev/disk:ro
+        networks:
+            - monitoring-prometheus
+
+    prometheus:
+        build:
+            context: .
+            dockerfile: docker/prometheus/Dockerfile
+        ports:
+            - "${PROM_PORT}:9090"
+        env_file:
+            - .env
+        volumes:
+            - ./prometheus:/app.cfg
+        networks:
+            - world
+            - monitoring-prometheus
+            - grafana-prometheus
+
+    grafana:
+        depends_on:
+            - loki
+        image: grafana/grafana:6.0.0
+        ports:
+            - "${GRAFANA_PORT}:3000"
+        env_file:
+            - .env
+        environment:
+            GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
+            GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PWD}
+            GF_PATHS_PROVISIONING: '/app.cfg/provisioning'
+        volumes:
+            - ./grafana:/app.cfg
+        networks:
+            - world
+            - grafana-loki
+            - grafana-prometheus
+
+networks:
+    world:
+    promtail-loki:
+        internal: true
+    grafana-loki:
+        internal: true
+    grafana-prometheus:
+        internal: true
+    monitoring-prometheus:
+        name: monitoring-prometheus
+        internal: true
