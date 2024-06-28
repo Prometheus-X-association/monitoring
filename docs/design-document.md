@@ -1,13 +1,12 @@
 # Monitoring Design Document
 
-The monitoring stack will consist of Prometheus for collecting and storing metrics,
-and Grafana for visualizing these metrics.
-This stack will provide a robust solution for monitoring the performance and health of
-the other's Building Blocks.
+The monitoring stack consists of Prometheus for collecting and storing metrics, and Grafana for visualizing these metrics.
+This stack provides a robust solution for monitoring the performance and health of the other Building Blocks.
 
 ## Technical usage scenarios & Features
 
-The monitoring allows us to observe and understand the system performance, availability, and health of each building block.
+The monitoring allows to observe and understand the system performance, availability, and health of each building block.
+
 ### Features/main functionalities
 
 - Comprehensive Observability
@@ -31,7 +30,7 @@ The monitoring allows us to observe and understand the system performance, avail
 - MUST provide a visualization of the metrics
 - MUST provide configurable alerts
 - MUST be scalable and customizable
-- MUST be secured
+- MUST be secure
 - MUST be easy to integrate
 
 ## Integrations
@@ -42,7 +41,7 @@ The monitoring allow an integration with all the other BBs.
 
 ### Integrations via Connector
 
-The integration for the connector is needed.
+Through the dataspace connector, the monitoring system will be able to process events and alerts running during any kind of data transaction to be directly interpreted and visualisable in the monitoring dashboards.
 
 ## Relevant Standards
 
@@ -272,8 +271,6 @@ docker compose up -d
 
 #### Environement variables
 
-You can use the command to customize your env variables.
-
 ```bash
 cp .env.sample .env
 ```
@@ -363,5 +360,5 @@ _In the future: link your OpenAPI spec here._
 ## Test specification
 
 ### Test plan
-This BB is composed exclusively of third-party components so the strategy will be to test the metrics on the other BB side.
+This BB is composed exclusively of third-party components so the strategy will be to test the metrics on the BBs directly.
 

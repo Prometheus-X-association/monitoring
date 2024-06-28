@@ -20,4 +20,4 @@ This playground contains:
 * `prometheus` - storage for metrics, get metrics from `cadvisor`, interface: [http://localhost:9090](http://localhost:9090)
 * `grafana` with pre-configured both datasources — `loki` and `prometheus`, interface: [http://localhost:3000](http://localhost:3000), `admin`/`test`
 
-See [initial specifications here](docs/specifications.md)
+See [initial specifications here](./docs/design-document.md)
