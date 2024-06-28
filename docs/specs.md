@@ -6,6 +6,7 @@ The monitoring stack will consist of Prometheus for collecting and storing metri
 ## Objectives
 - Implement Prometheus for scraping and storing metrics.
 - Integrate Grafana for visualizing metrics stored in Prometheus.
+- Integrate Prom client in the needed building block to provide metrics
 - Ensure high availability and scalability of the monitoring stack.
 - Provide alerting capabilities for predefined thresholds.
 
@@ -16,41 +17,32 @@ The architecture of the monitoring stack includes the following components:
 3. **Loki**
 4. **Alertmanager**
 5. **Prom client**
-6. **Node exporter** (optional)
+6. **Prom trail** (optional)
 
 ## Technical Specifications
 
 ### Prometheus Server
 
-- **Version:** Prometheus 2.x
+- **Version:** Prometheus 2.7.1
 - **Configuration:**
     - **Scrape Interval:** 15 seconds (configurable)
     - **Retention Period:** 15 days (configurable)
-    - **Storage:**
-        - Local storage on SSDs
-        - Optional: Remote storage integration (e.g., Thanos, Cortex)
+    - **Storage:** Local storage on SSDs
     - **Alerting Rules:** Defined in YAML files and reloaded dynamically
 
-- **Deployment Options:**
-    - Bare-metal
-    - Virtual Machines
-    - Containers (Docker/Kubernetes)
+- **Deployment Options:** Containers (Docker/Kubernetes)
 
 - **Networking:**
     - **Port:** 9090 (default)
-    - **Access Control:** Use firewall rules or reverse proxy with authentication (e.g., Nginx with Basic Auth)
 
 ### Grafana Server
 
-- **Version:** Grafana 7.x or higher
+- **Version:** Grafana 6.0.0
 - **Configuration:**
-    - **Datasource:** Prometheus
-    - **Dashboards:** Predefined and custom dashboards
-    - **User Management:** Integrate with LDAP/SSO for authentication and authorization
+    - **Datasource:** Prometheus & Loki
+    - **Dashboards:** a predefined dashboard is given
 
 - **Deployment Options:**
-    - Bare-metal
-    - Virtual Machines
     - Containers (Docker/Kubernetes)
 
 - **Networking:**
@@ -85,8 +77,6 @@ The architecture of the monitoring stack includes the following components:
     - **Inhibition:** Suppress alerts based on conditions
 
 - **Deployment Options:**
-    - Bare-metal
-    - Virtual Machines
     - Containers (Docker/Kubernetes)
 
 - **Networking:**
@@ -175,6 +165,7 @@ app.listen(PORT, () => {
     - Deploy multiple Alertmanager instances with clustering enabled.
 
 ## Relevant Metrics
+The default Metrics will be used along sides https requests.
 ### Consent
 ### Contract
 ### Catalog
@@ -207,51 +198,6 @@ app.listen(PORT, () => {
     - Monitor the health and performance of Prometheus, Grafana, and Alertmanager.
     - Create alerts for high resource usage, scrape failures, etc.
 
-## Implementation Plan
-
-1. **Setup Prometheus Server:**
-    - Install Prometheus.
-    - Configure scrape targets.
-    - Define alerting rules.
-    - Set up remote storage if needed.
-
-2. **Setup Grafana Server:**
-    - Install Grafana.
-    - Configure Prometheus as a datasource.
-    - Create and import dashboards.
-    - Set up user authentication.
-
-3. **Setup Alertmanager:**
-    - Install Alertmanager.
-    - Configure routing and receivers.
-    - Integrate with Prometheus.
-
-4. **Deploy Exporters:**
-    - Install Node Exporter on all servers.
-    - Deploy application-specific exporters.
-
-5. **Configure High Availability:**
-    - Set up multiple instances of Prometheus, Grafana, and Alertmanager.
-    - Configure load balancing and clustering.
-
-6. **Implement Security Measures:**
-    - Configure TLS.
-    - Set up authentication and authorization.
-
-7. **Backup and Recovery Setup:**
-    - Implement backup solutions.
-    - Test recovery procedures.
-
-## Documentation and Training
-
-- **Documentation:**
-    - Detailed setup and configuration guides.
-    - Dashboard creation and customization guides.
-    - Troubleshooting guides.
-
-- **Training:**
-    - Conduct training sessions for the operations team.
-    - Provide hands-on workshops for using Grafana and creating dashboards.
 
 ## Useful links
 - https://grafana.com/docs/grafana/latest/alerting/fundamentals/notifications/alertmanager/
