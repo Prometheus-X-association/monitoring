@@ -349,6 +349,113 @@ app.get('/metrics', async (req, res) => {
 
 ```
 
+## Monitoring Scope
+#### Express App
+To go further in the customization of the metrics, some of them can be business logic metrics.
+As an example, there is the metrics of the number of refused consent inside the consent-manager BB.
+
+**metrics.ts**
+```typescript
+import client from "prom-client";
+
+const register = new client.Registry();
+
+register.setDefaultLabels({
+    app: process.env.APPLICATION_NAME,
+});
+
+const httpRequestCounter = new client.Counter({
+    name: 'http_requests_total',
+    help: 'Total number of HTTP requests',
+    labelNames: ['method', 'route', 'status_code']
+});
+register.registerMetric(httpRequestCounter);
+
+const httpRequestDuration = new client.Histogram({
+    name: 'http_request_duration_seconds',
+    help: 'Duration of HTTP requests in seconds',
+    labelNames: ['method', 'route', 'status_code']
+});
+register.registerMetric(httpRequestDuration);
+
+// Create a Counter metric for refused consent
+const refusedConsent = new client.Counter({
+    name: 'refused_consent',
+    help: 'number of consent refused',
+});
+register.registerMetric(refusedConsent);
+
+export {
+    client,
+    httpRequestCounter,
+    register,
+    httpRequestDuration,
+    refusedConsent
+}
+```
+
+All the metrics can be defined and exported in the same file and being imported where it is needed
+
+**server.ts**
+```typescript
+import express, { json as expressJson } from "express";
+import {client, register, httpRequestCounter, httpRequestDuration} from "./utils/metrics";
+
+export const startServer = () => {
+  const app = express();
+  const port =  3000;
+
+    //Default metrics
+    client.collectDefaultMetrics({ register });
+
+    // increment http request middleware
+    app.use((req, res, next) => {
+      res.on('finish', () => {
+        httpRequestCounter.inc({ method: req.method, route: req.path, status_code: res.statusCode });
+        httpRequestDuration.observe({ method: req.method, route: req.path, status_code: res.statusCode }, Date.now());
+      });
+      next();
+    });
+
+    //metrics endpoint
+    app.get('/metrics', async (req, res) => {
+      res.set('Content-Type', register.contentType);
+      res.end(await register.metrics());
+    });
+    
+
+  // Start the server
+  const server = app.listen(port, () => {
+    //eslint-disable-next-line
+    console.log(`Consent manager running on: http://localhost:${port}`);
+  });
+
+  return { server, app }; // For tests
+};
+```
+
+**consentController.ts**
+```typescript
+import {refusedConsent} from "../utils/metrics";
+
+export const refuseConsent = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+) => {
+  try {
+    // logic here
+    
+    // increment the counter
+    refusedConsent.inc();
+    return res.status(200);
+  } catch (err) {
+    Logger.error(err);
+    next(err);
+  }
+};
+```
+
 ## Third Party Components & Licenses
 
 - [Prometheus](https://github.com/prometheus/prometheus/blob/main/LICENSE)
