@@ -1,4 +1,31 @@
 # Monitoring
+
+## Overview
+
+This project implements a monitoring stack using Prometheus,Grafana, Loki, and other components to provide observability forapplications and services. It allows users to collect metrics,visualize data, and set up alerts for system performance and health.
+
+## Installation Instructions
+
+1. Clone the repository:
+
+    ```bash
+    git clone <repository-url>
+    cd <repository-directory>
+    ```
+
+2. Copy the sample environment file and configure your environment variables:
+
+    ```bash
+    cp .env.sample .env
+    ```
+
+3. Ensure Docker and Docker Compose are installed on your machine.
+
+## Configuration
+
+- **Prometheus Configuration**: Located in `prometheus/prometheus.yml`, this file defines the scrape intervals and targets for metrics collection.
+- **Grafana Dashboards**: The dashboards are defined in JSON files located in `grafana/dashboards/`. You can customize these to fit your monitoring needs.
+
 ## Start & Stop
 
 ```bash
@@ -14,10 +41,11 @@ docker-compose down
 ## Components
 
 This playground contains:
-* `loki` - storage for logs
-* `promtail` that scrapes logs from your `/var/log` directory and puts to `loki`
-* `cadvisor` - exports metrics of running docker containers
-* `prometheus` - storage for metrics, get metrics from `cadvisor`, interface: [http://localhost:9090](http://localhost:9090)
-* `grafana` with pre-configured both datasources — `loki` and `prometheus`, interface: [http://localhost:3000](http://localhost:3000), `admin`/`test`
 
-See [initial specifications here](./docs/design-document.md)
+- `loki` - storage for logs
+- `promtail` that scrapes logs from your `/var/log` directory and puts to `loki`
+- `cadvisor` - exports metrics of running docker containers
+- `prometheus` - storage for metrics, get metrics from `cadvisor`, interface: [http://localhost:9090](http://localhost:9090) (by default).
+- `grafana`: with pre-configured both datasources — `loki` and `prometheus`. Sample dashboard for node.js app. interface: [http://localhost:3000](http://localhost:3000) (by default).
+
+See [initial specifications here](./docs/design-document.md), [Deployment and implementation specification here](./docs/design-document.md#configuration-and-deployment-settings) and [Further information here](./docs/further-informations.md)

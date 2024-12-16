@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
     loki:
+        container_name: ptx_loki
         image: grafana/loki:master
         command: -config.file=/etc/loki/local-config.yaml
         networks:
@@ -9,16 +10,18 @@ services:
             - promtail-loki
 
     promtail:
+        container_name: ptx_promtail
         depends_on:
             - loki
         image: grafana/promtail:master
         volumes:
             - /var/log:/var/log
-        command: -config.file=/etc/promtail/docker-config.yaml
+        command: -config.file=/etc/promtail/config.yml
         networks:
             - promtail-loki
 
     cadvisor:
+        container_name: ptx_cadvisor
         image: google/cadvisor:v0.33.0
         volumes:
             - /:/rootfs:ro
@@ -30,6 +33,7 @@ services:
             - monitoring-prometheus
 
     prometheus:
+        container_name: ptx_prometheus
         build:
             context: .
             dockerfile: docker/prometheus/Dockerfile
@@ -45,6 +49,7 @@ services:
             - grafana-prometheus
 
     grafana:
+        container_name: ptx_grafana
         depends_on:
             - loki
         image: grafana/grafana:6.0.0

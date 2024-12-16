@@ -15,13 +15,13 @@ scrape_configs:
       - targets: ['cadvisor:8080']
   - job_name: 'consent-manager'
     static_configs:
-      - targets: ['consent-manager:${CONSENT_MANAGER_PORT}']
+      - targets: ['${CONSENT_MANAGER}']
   - job_name: 'contract-manager'
     static_configs:
-      - targets: ['contract-manager:${CONTRACT_MANAGER_PORT}']
+      - targets: ['${CONTRACT_MANAGER}']
   - job_name: 'catalog'
     static_configs:
-      - targets: ['catalog:${CATALOG_PORT}']
+      - targets: ['${CATALOG}']
   - job_name: 'catalog-registry'
     static_configs:
-      - targets: ['catalog-registry:${CATALOG_REGISTRY_PORT}']
+      - targets: ['${CATALOG_REGISTRY}']

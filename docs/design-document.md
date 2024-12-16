@@ -37,7 +37,7 @@ The monitoring allows to observe and understand the system performance, availabi
 
 ### Direct Integrations with Other BBs
 
-The monitoring allow an integration with all the other BBs.
+The monitoring allows an integration with all the other BBs.
 
 ### Integrations via Connector
 
@@ -53,6 +53,7 @@ Through the dataspace connector, the monitoring system will be able to process e
 
 This BB will scrape data from different data sources to gather metrics.
 One of the most efficient ways is to display metrics on an endpoint "/metrics" readable by Prometheus.
+
 ```json
 # HELP process_cpu_user_seconds_total Total user CPU time spent in seconds.
 # TYPE process_cpu_user_seconds_total counter
@@ -83,6 +84,7 @@ As a third-party component Prometheus will gather and stock all this data to kee
 ## Architecture
 
 The architecture of the monitoring stack includes the following components:
+
 1. **Prometheus Server**
 2. **Grafana Server**
 3. **Loki**
@@ -155,44 +157,44 @@ graph TB
 
 - **Version:** Prometheus 2.7.1
 - **Configuration:**
-    - **Scrape Interval:** configurable
-    - **Retention Period:** configurable
-    - **Storage:** Local storage
-    - **Alerting Rules:** Defined in YAML files and reloaded dynamically
+  - **Scrape Interval:** configurable
+  - **Retention Period:** configurable
+  - **Storage:** Local storage
+  - **Alerting Rules:** Defined in YAML files and reloaded dynamically
 
 - **Deployment Options:** Containers (Docker)
 
 - **Networking:**
-    - **Port:** 9090 by default (configurable)
+  - **Port:** 9090 by default (configurable)
 
 #### Grafana Server
 
 - **Version:** Grafana 6.0.0
 - **Configuration:**
-    - **Datasource:** Prometheus & Loki
-    - **Dashboards:** a predefined dashboard is given
+  - **Datasource:** Prometheus & Loki
+  - **Dashboards:** a predefined dashboard is given
 
 - **Deployment Options:**
-    - Containers (Docker)
+  - Containers (Docker)
 
 - **Networking:**
-    - **Port:** 3000 by default (configurable)
-    - **Access Control:** Use built-in authentication
+  - **Port:** 3000 by default (configurable)
+  - **Access Control:** Use built-in authentication
 
 #### Loki
 
 - **Version:** latest version
 - **Configuration:**
-    - **Routes:** Define routing rules for different alert types
-    - **Receivers:** Email, Slack, PagerDuty, etc. (to define)
-    - **Grouping:** Group similar alerts to reduce noise
-    - **Inhibition:** Suppress alerts based on conditions
+  - **Routes:** Define routing rules for different alert types
+  - **Receivers:** Email, Slack, PagerDuty, etc. (to define)
+  - **Grouping:** Group similar alerts to reduce noise
+  - **Inhibition:** Suppress alerts based on conditions
 
 - **Deployment Options:**
-    - Containers (Docker)
+  - Containers (Docker)
 
 - **Networking:**
-    - **Port:** 9093 by default (configurable)
+  - **Port:** 9093 by default (configurable)
 
 #### Prom client
 
@@ -201,7 +203,7 @@ graph TB
   - customizable
 
 - **Deployment Options:**
-    - application
+  - application
 
 #### Cadvisor
 
@@ -215,6 +217,7 @@ graph TB
   - to implement in docker compose BB's
 
 ##### docker compose example
+
 ```yaml
 promtail:
     image: grafana/promtail:master
@@ -269,7 +272,7 @@ The monitoring architecture can be deployed through docker and docker-compose us
 docker compose up -d
 ```
 
-#### Environement variables
+### Environement variables
 
 ```bash
 cp .env.sample .env
@@ -282,23 +285,25 @@ PROM_PORT=9090 #Prometheus port
 GRAFANA_PORT=3000 #Grafana port
 GRAFANA_ADMIN_USER=admin # default user for grafana
 GRAFANA_ADMIN_PWD=test # default user for grafana
-CONSENT_MANAGER_PORT=8887 #Port of the app to monitor 
-CONTRACT_MANAGER_PORT=8888 #Port of the app to monitor
-CATALOG_PORT=4040 #Port of the app to monitor
-CATALOG_REGISTRY_PORT=3000 #Port of the app to monitor
+CONSENT_MANAGER=consent-manager:8887 #URI of the app to monitor 
+CONTRACT_MANAGER=contract-manager:8888 #URI of the app to monitor
+CATALOG=catalog-api:4040 #URI of the app to monitor
+CATALOG_REGISTRY=catalog-registry:3000 #URI of the app to monitor
 ```
 
-### Prom client
+### Prom Client
 
 Across the different apps of Prometheus-X, the monitoring needs to be implemented and can be customized.
 Prom clients have been used to easily give simple and default metrics to Prometheus.
 
 #### installation
-```bash 
+
+```bash
 npm install prom-client
 ```
 
 #### Implementation
+
 ```js
 import client from "prom-client";
 
@@ -346,12 +351,15 @@ app.get('/metrics', async (req, res) => {
 
 ```
 
-## Monitoring Scope
+### Monitoring Scope
+
 #### Express App
+
 To go further in the customization of the metrics, some of them can be business logic metrics.
 As an example, there is the metrics of the number of refused consent inside the consent-manager BB.
 
-**metrics.ts**
+#### **metrics.ts**
+
 ```typescript
 import client from "prom-client";
 
@@ -393,7 +401,8 @@ export {
 
 All the metrics can be defined and exported in the same file and being imported where it is needed
 
-**server.ts**
+#### **server.ts**
+
 ```typescript
 import express, { json as expressJson } from "express";
 import {client, register, httpRequestCounter, httpRequestDuration} from "./utils/metrics";
@@ -431,7 +440,8 @@ export const startServer = () => {
 };
 ```
 
-**consentController.ts**
+#### **consentController.ts**
+
 ```typescript
 import {refusedConsent} from "../utils/metrics";
 
@@ -467,5 +477,5 @@ _In the future: link your OpenAPI spec here._
 ## Test specification
 
 ### Test plan
-This BB is composed exclusively of third-party components so the strategy will be to test the metrics on the BBs directly.
 
+This BB is composed exclusively of third-party components so the strategy will be to test the metrics on the BBs directly.
