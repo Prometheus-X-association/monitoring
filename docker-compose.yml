@@ -42,7 +42,26 @@ services:
         env_file:
             - .env
         volumes:
-            - ./prometheus:/app.cfg
+            - ./prometheus:/etc/prometheus
+        networks:
+            - world
+            - monitoring-prometheus
+            - grafana-prometheus
+
+    alert-manager:
+        restart: always
+        container_name: ptx_alert_manager
+        depends_on:
+            - prometheus
+        ports:
+            - "${ALERT_PORT}:9093"
+        env_file:
+            - .env
+        image: prom/alertmanager
+        expose:
+            - "9093"
+        volumes:
+            - ./alertmanager/config.yml:/etc/alertmanager/rules.yml
         networks:
             - world
             - monitoring-prometheus

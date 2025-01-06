@@ -1,0 +1,16 @@
+replicaCount: 1
+
+service:
+  type: LoadBalancer
+  port: 3000
+
+env:
+  PROM_PORT:9090
+  GRAFANA_PORT:3006
+  ALERT_PORT:9093
+  GRAFANA_ADMIN_USER:admin
+  GRAFANA_ADMIN_PWD:test
+  CONSENT_MANAGER:consent-manager:8887
+  CONTRACT_MANAGER:contract-manager:8888
+  CATALOG:catalog-api:4040
+  CATALOG_REGISTRY:catalog-registry:3000

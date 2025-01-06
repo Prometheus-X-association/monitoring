@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monitoring
+  namespace: monitoring
+spec:
+  replicas: { { .Values.replicaCount } }
+  selector:
+    matchLabels:
+      app: monitoring
+  template:
+    metadata:
+      labels:
+        app: monitoring
+    spec:
+      containers:
+        - name: loki
+          image: "grafana/loki:master"
+          ports:
+            - containerPort: 3100
+        - name: promtail
+          image: "grafana/promtail:master"
+          ports:
+            - containerPort: 9080
+        - name: cadvisor
+          image: "google/cadvisor:v0.33.0"
+          ports:
+            - containerPort: 8080
+        - name: prometheus
+          image: "prom/prometheus:latest"
+          ports:
+            - containerPort: 9090
+          env:
+            - name: PROM_PORT
+              value: "{{ .Values.env.PROM_PORT }}"
+        - name: alert-manager
+          image: "prom/alertmanager:latest"
+          ports:
+            - containerPort: 9093
+          env:
+            - name: PROM_PORT
+              value: "{{ .Values.env.ALERT_PORT }}"
+        - name: grafana
+          image: "grafana/grafana:6.0.0"
+          ports:
+            - containerPort: 3000
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              value: "{{ .Values.env.GRAFANA_ADMIN_USER }}"
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: "{{ .Values.env.GRAFANA_ADMIN_PWD }}"
