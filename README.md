@@ -38,6 +38,40 @@ docker-compose down
 
 <p align="center"><img src="_pics/prometheus_loki.png" alt="Grafana splitted dashboard: prometheus with loki" width="700"></p>
 
+## Running Tests
+
+To ensure that your monitoring stack is configured correctly, you can run the following tests:
+
+1. **Check Prometheus Configuration**:
+    ```bash
+    ./tests/checkConfig.sh
+    ```
+    **Expected Output**:
+    ```
+    Checking config file /etc/prometheus/prometheus.yml: SUCCESS
+    ```
+
+2. **Health Check for Containers**:
+    ```bash
+    ./tests/healthCheck.sh
+    ```
+    **Expected Output**:
+    ```
+    ptx_prometheus: running
+    ptx_grafana: running
+    ptx_loki: running
+    ```
+
+3. **Test Prometheus Rules**:
+    ```bash
+    ./tests/testRules.sh
+    ```
+    **Expected Output**:
+    ```
+    Testing rules file /etc/prometheus/test.yml: SUCCESS
+    ```
+    *Note: The `test.yml` file contains examples for tests and rules. More can be added and customized as needed.*
+
 ## Components
 
 This playground contains:
