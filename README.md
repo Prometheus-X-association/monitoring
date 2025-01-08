@@ -82,4 +82,63 @@ This playground contains:
 - `prometheus` - storage for metrics, get metrics from `cadvisor`, interface: [http://localhost:9090](http://localhost:9090) (by default).
 - `grafana`: with pre-configured both datasources — `loki` and `prometheus`. Sample dashboard for node.js app. interface: [http://localhost:3000](http://localhost:3000) (by default).
 
+# Terraform
+
+1. Install Terraform: Ensure Terraform is installed on your machine.
+2. Configure Kubernetes: Ensure you have access to your Kubernetes cluster and kubectl is configured.
+3. Initialize Terraform: Run the following commands from the terraform directory.
+
+```sh
+cd terraform
+terraform init
+```
+
+4. Apply the Configuration: Apply the Terraform configuration to create the resources.
+
+```sh
+terraform apply
+```
+
+5. Retrieve Service IP: After applying the configuration, retrieve the service IP.
+
+```sh
+terraform output consent_manager_service_ip
+```
+
+> - Replace placeholder values in the `kubernetes_secret` resource with actual values from your `.env`.
+> - Ensure the `server_port` value matches the port used in your application.
+> - Adjust the `host_path` in the `kubernetes_persistent_volume` resource to an appropriate path on your Kubernetes nodes.
+
+### Deployment with Helm
+
+1. **Install Helm**: Ensure Helm is installed on your machine. You can install it following the instructions [here](https://helm.sh/docs/intro/install/).
+
+2. **Package the Helm chart**:
+
+   ```sh
+   helm package ./path/to/monitoring
+   ```
+
+3. **Deploy the Helm chart**:
+
+   ```sh
+   helm install consent-manager ./path/to/monitoring
+   ```
+
+4. **Verify the deployment**:
+
+   ```sh
+   kubectl get all -n monitoring
+   ```
+
+5. **Retrieve Service IP**:
+
+   ```sh
+   kubectl get svc -n monitoring
+   ```
+
+> - Replace placeholder values in the `values.yaml` file with actual values from your `.env`.
+> - Ensure the `port` value matches the port used in your application.
+
+
 See [initial specifications here](./docs/design-document.md), [Deployment and implementation specification here](./docs/design-document.md#configuration-and-deployment-settings) and [Further information here](./docs/further-informations.md)
