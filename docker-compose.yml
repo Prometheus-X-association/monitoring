@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
     loki:
+        container_name: ptx_loki
         image: grafana/loki:master
         command: -config.file=/etc/loki/local-config.yaml
         networks:
@@ -9,16 +10,18 @@ services:
             - promtail-loki
 
     promtail:
+        container_name: ptx_promtail
         depends_on:
             - loki
         image: grafana/promtail:master
         volumes:
             - /var/log:/var/log
-        command: -config.file=/etc/promtail/docker-config.yaml
+        command: -config.file=/etc/promtail/config.yml
         networks:
             - promtail-loki
 
     cadvisor:
+        container_name: ptx_cadvisor
         image: google/cadvisor:v0.33.0
         volumes:
             - /:/rootfs:ro
@@ -30,6 +33,7 @@ services:
             - monitoring-prometheus
 
     prometheus:
+        container_name: ptx_prometheus
         build:
             context: .
             dockerfile: docker/prometheus/Dockerfile
@@ -38,13 +42,33 @@ services:
         env_file:
             - .env
         volumes:
-            - ./prometheus:/app.cfg
+            - ./prometheus:/etc/prometheus
+        networks:
+            - world
+            - monitoring-prometheus
+            - grafana-prometheus
+
+    alert-manager:
+        restart: always
+        container_name: ptx_alert_manager
+        depends_on:
+            - prometheus
+        ports:
+            - "${ALERT_PORT}:9093"
+        env_file:
+            - .env
+        image: prom/alertmanager
+        expose:
+            - "9093"
+        volumes:
+            - ./alertmanager/config.yml:/etc/alertmanager/rules.yml
         networks:
             - world
             - monitoring-prometheus
             - grafana-prometheus
 
     grafana:
+        container_name: ptx_grafana
         depends_on:
             - loki
         image: grafana/grafana:6.0.0
